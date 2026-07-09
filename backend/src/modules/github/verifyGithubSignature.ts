@@ -8,15 +8,22 @@ export const verifyGithubSignature = (req: Request): boolean => {
     if (!signature) {
         return false;
     }
-    const payload = req.body as Buffer;
+    if (!Buffer.isBuffer(req.body)) {
+        return false;
+    }
 
+    const payload = req.body;
     const digest =
         "sha256=" +
         crypto
             .createHmac('sha256', env.GITHUB_WEBHOOK_SECRET)
             .update(payload)
             .digest('hex');
+    console.log("Payload:");
+    console.log(payload.toString());
 
+    console.log("Digest:");
+    console.log(digest);
     if (digest.length !== signature.length) {
         return false;
     }

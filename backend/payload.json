@@ -1,0 +1,12 @@
+{
+  "action": "opened",
+  "repository": {
+    "full_name": "priyabr4t/Code-Sage"
+  },
+  "pull_request": {
+    "number": 5,
+    "head": {
+      "sha": "abc123"
+    }
+  }
+}
