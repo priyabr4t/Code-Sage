@@ -1,8 +1,11 @@
 import { Request } from "express";
 import crypto from "node:crypto";
 import { env } from "../../config/env"
-
 export const verifyGithubSignature = (req: Request): boolean => {
+
+    console.log("Request body:", req.body instanceof Buffer);
+    console.log("Type of request body:", typeof req.body);
+
     const signature = req.header("X-Hub-Signature-256");
 
     if (!signature) {
@@ -12,7 +15,8 @@ export const verifyGithubSignature = (req: Request): boolean => {
         return false;
     }
 
-    const payload = req.body;
+    const payload = req.body as Buffer;
+
     const digest =
         "sha256=" +
         crypto
