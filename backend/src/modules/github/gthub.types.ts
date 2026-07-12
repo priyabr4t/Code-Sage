@@ -5,7 +5,7 @@ export interface PullRequestWebhookPayload {
         full_name: string;
     };
 
-    pull_request?: {
+    pull_request: {
         number: number;
 
         head: {

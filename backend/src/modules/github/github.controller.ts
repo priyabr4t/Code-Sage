@@ -2,12 +2,13 @@ import { Request, Response } from 'express';
 import { verifyGithubSignature } from './verifyGithubSignature';
 import { logger } from '../../shared/logger';
 import { PullRequestWebhookPayload } from './gthub.types';
+import { reviewQueue } from '../../queues/review.queue';
 
-export const webhookRequestHandler = (req: Request, res: Response) => {
-    logger.info({
-        requestId: req.requestId,
-        message: "Received webhook request",
-    }, "Webhook received");
+export const webhookRequestHandler = async (req: Request, res: Response) => {
+    logger.info(
+        { requestId: req.requestId },
+        "Webhook received"
+    );
 
     if (!verifyGithubSignature(req)) {
         return res.status(401).json({
@@ -20,7 +21,7 @@ export const webhookRequestHandler = (req: Request, res: Response) => {
     const { action, repository, pull_request } = payload;
 
     // avoid unsupported action types
-    if(action !== "opened" && action !== "synchronize" ) {
+    if (action !== "opened" && action !== "synchronize") {
         logger.info({
             requestId: req.requestId,
             action: action,
@@ -29,21 +30,32 @@ export const webhookRequestHandler = (req: Request, res: Response) => {
         return res.status(200).json({ ignored: true });
     }
 
-    logger.info({
+    logger.info(
+        {
+            requestId: req.requestId,
+            action,
+            repository: repository.full_name,
+            prNumber: pull_request.number,
+        },
+        "Pull request parsed"
+    );
+    await reviewQueue.add("review-pr", {
         requestId: req.requestId,
-        action: action,
-        repository: repository?.full_name,
-        pull_request_number: pull_request?.number,
-    }, "Pull request payload received");
+        repository: repository.full_name,
+        prNumber: pull_request.number,
+        sha: pull_request.head.sha,
+    });
 
-    const githubEvent = req.header("X-GitHub-Event");
-    const deliveryId = req.header("X-GitHub-Delivery");
+    logger.info(
+        {
+            requestId: req.requestId,
+            jobName: "review-pr",
+        },
+        "Review job queued"
+    );
 
-    logger.info({
-        requestId: req.requestId,
-        event: githubEvent,
-        deliveryId: deliveryId,
-    }, "signature verified and payload parsed successfully");
+    return res.status(200).json({
+        queued: true,
+    });
 
-    return res.status(200).json({ received: true });
 }
