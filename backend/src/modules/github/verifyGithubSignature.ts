@@ -18,7 +18,7 @@ export const verifyGithubSignature = (req: Request): boolean => {
     const payload = req.body as Buffer;
 
     const digest =
-        "sha256=" +
+        "sha256=" +``
         crypto
             .createHmac('sha256', env.GITHUB_WEBHOOK_SECRET)
             .update(payload)
