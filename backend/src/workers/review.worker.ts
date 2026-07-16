@@ -6,6 +6,7 @@ import {
     getPullRequest,
     getPullRequestFiles,
 } from "../modules/github/github.service";
+import { prepareReviewFiles } from "../modules/review/review.service";
 
 new Worker(
     "review-queue",
@@ -47,12 +48,21 @@ new Worker(
                 "Fetched changed files"
             );
 
-            for (const file of files) {
+            const reviewFiles = prepareReviewFiles(files)
+
+            logger.info(
+                {
+                    totalReviewFiles: reviewFiles.length,
+                },
+                "Prepared review files"
+            );
+
+
+
+            for (const file of reviewFiles) {
                 logger.info({
                     filename: file.filename,
-                    status: file.status,
-                    additions: file.additions,
-                    deletions: file.deletions,
+                    patch: file.patch,
                 });
             }
         } catch (error) {
