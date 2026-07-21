@@ -1,6 +1,7 @@
 import "dotenv/config";
 
 import { getPullRequest, getPullRequestFiles } from "../modules/github/github.service";
+import { prepareReviewFiles } from "../modules/review/review.service";
 
 async function main() {
     const owner = "priyabr4t";
@@ -8,7 +9,7 @@ async function main() {
     const prNumber = 1;
 
     const pr = await getPullRequest(owner, repo, prNumber);
-    
+
     console.log("===== Pull Request =====");
     console.log(pr.title)
     console.log(pr.state)
@@ -20,17 +21,11 @@ async function main() {
         prNumber
     );
 
-    console.log("\n===== Changed Files =====");
+    const reviewFiles = prepareReviewFiles(files);
 
-    for (const file of files) {
-        console.log({
-            filename: file.filename,
-            status: file.status,
-            additions: file.additions,
-            deletions: file.deletions,
-            changes: file.changes,
-        });
-    }
+    console.log("\n===== Review Files =====");
+
+    console.log(reviewFiles);
 }
 
 main().catch(console.error)
