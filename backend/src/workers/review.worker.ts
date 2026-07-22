@@ -7,6 +7,7 @@ import {
     getPullRequestFiles,
 } from "../modules/github/github.service";
 import { prepareReviewFiles } from "../modules/review/review.service";
+import { buildReviewPrompt } from "../modules/ai/prompt.service";
 
 new Worker(
     "review-queue",
@@ -56,6 +57,14 @@ new Worker(
                 },
                 "Prepared review files"
             );
+
+            const prompt = buildReviewPrompt({
+                title: pullRequest.title,
+                description: pullRequest.body ?? "",
+                files: reviewFiles
+            })
+
+            logger.info({prompt} , "Generated review prompt");
 
 
 
