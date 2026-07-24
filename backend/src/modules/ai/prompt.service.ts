@@ -29,13 +29,22 @@ ${context.description}
 }
 
 function buildOutputInstructions(): string {
-    return `Return the review as a list of issues.
+    return `Return ONLY valid JSON.
 
-For each issue include:
-- filename
-- explanation
-- suggested fix
-`;
+Do not wrap the response in markdown.
+
+Do not use triple backticks.
+
+Return an array.
+
+Each object must have exactly:
+
+{
+  "filename": string,
+  "explanation": string,
+  "suggestedFix": string
+}`
+
 }
 
 function buildFilesSection(files: ReviewFile[]): string {
