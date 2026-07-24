@@ -1,7 +1,9 @@
 import { ai } from "./ai.client";
 import { logger } from "../../shared/logger";
+import { ReviewIssue } from "./parser.types";
+import { parseReview } from "./parser";
 
-export const generateReview = async (prompt: string): Promise<string> => {
+export const generateReview = async (prompt: string): Promise<ReviewIssue[]> => {
     try {
 
         logger.info(
@@ -17,15 +19,13 @@ export const generateReview = async (prompt: string): Promise<string> => {
         })
 
         const review = response.text ?? "";
+        const issues = parseReview(review);
 
         logger.info(
-            {
-                responseLength: review.length,
-            },
             "Received Gemini response"
         )
 
-        return review
+        return issues
 
     } catch (error) {
 

@@ -1,5 +1,7 @@
-export interface ReviewIssue {
-    filename: string,
-    explanation: string,
-    suggestedFix: string
-}
+import { ReviewIssue } from "./parser.types";
+
+export const parseReview = (
+    response: string
+): ReviewIssue[] => {
+    return JSON.parse(response);
+};
