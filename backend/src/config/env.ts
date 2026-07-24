@@ -11,7 +11,7 @@ const envSchema = z.object({
 
   GITHUB_WEBHOOK_SECRET: z.string().min(1),
 
-  OPENAI_API_KEY: z.string().min(1),
+  GEMINI_API_KEY: z.string().min(1),
 });
 
 export const env = envSchema.parse(process.env);
