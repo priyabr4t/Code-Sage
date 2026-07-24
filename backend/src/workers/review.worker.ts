@@ -80,6 +80,7 @@ new Worker(
                 },
                 "Failed to process review job"
             );
+            throw error
         }
     },
     {

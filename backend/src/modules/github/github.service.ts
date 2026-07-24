@@ -19,10 +19,17 @@ export const getPullRequestFiles = async (
     repo: string,
     pullNumber: number
 ) => {
-    const response = await github.pulls.listFiles({
-        owner,
-        repo,
-        pull_number: pullNumber
-    })
-    return response.data
+    const files = await github.paginate(
+        github.pulls.listFiles,
+        {
+            owner,
+            repo,
+            pull_number: pullNumber,
+            per_page: 100
+
+        }
+    )
+    console.log(files.length);
+
+    return files
 }

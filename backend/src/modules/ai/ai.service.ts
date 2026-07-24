@@ -2,6 +2,7 @@ import { ai } from "./ai.client";
 import { logger } from "../../shared/logger";
 import { ReviewIssue } from "./parser.types";
 import { parseReview } from "./parser";
+import { env } from "../../config/env";
 
 export const generateReview = async (prompt: string): Promise<ReviewIssue[]> => {
     try {
@@ -14,8 +15,11 @@ export const generateReview = async (prompt: string): Promise<ReviewIssue[]> => 
         )
 
         const response = await ai.models.generateContent({
-            model: "gemini-3.6-flash",
+            model: env.GEMINI_MODEL,
             contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+            },
         })
 
         const review = response.text ?? "";
