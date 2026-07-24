@@ -69,12 +69,6 @@ new Worker(
 
             logger.info({preview: review.slice(0,500)}, "AI Review Generated !")
 
-            for (const file of reviewFiles) {
-                logger.info({
-                    filename: file.filename,
-                    patch: file.patch,
-                });
-            }
         } catch (error) {
             logger.error(
                 {

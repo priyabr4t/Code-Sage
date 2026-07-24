@@ -12,7 +12,7 @@ export const generateReview = async (prompt: string): Promise<string> => {
         )
 
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-3.6-flash",
             contents: prompt,
         })
 
@@ -28,7 +28,7 @@ export const generateReview = async (prompt: string): Promise<string> => {
         return review
 
     } catch (error) {
-        
+
         logger.error(
             {
                 err: error,
