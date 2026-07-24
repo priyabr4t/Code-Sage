@@ -1,61 +1,76 @@
 import { Request, Response } from 'express';
 import { verifyGithubSignature } from './verifyGithubSignature';
 import { logger } from '../../shared/logger';
-import { PullRequestWebhookPayload } from './gthub.types';
+import { PullRequestWebhookPayload } from './github.types';
 import { reviewQueue } from '../../queues/review.queue';
 
 export const webhookRequestHandler = async (req: Request, res: Response) => {
-    logger.info(
-        { requestId: req.requestId },
-        "Webhook received"
-    );
+    try {
+        logger.info(
+            { requestId: req.requestId },
+            "Webhook received"
+        );
 
-    if (!verifyGithubSignature(req)) {
-        return res.status(401).json({
-            message: "Invalid signature",
-        });
-    }
+        if (!verifyGithubSignature(req)) {
+            return res.status(401).json({
+                message: "Invalid signature",
+            });
+        }
 
-    const payload: PullRequestWebhookPayload = JSON.parse(req.body.toString());
+        const payload: PullRequestWebhookPayload = JSON.parse(req.body.toString());
 
-    const { action, repository, pull_request } = payload;
+        const { action, repository, pull_request } = payload;
 
-    // avoid unsupported action types
-    if (action !== "opened" && action !== "synchronize") {
-        logger.info({
+        // avoid unsupported action types
+        if (action !== "opened" && action !== "synchronize") {
+            logger.info({
+                requestId: req.requestId,
+                action: action,
+            }, "Unsupported action type received");
+
+            return res.status(200).json({ ignored: true });
+        }
+
+        logger.info(
+            {
+                requestId: req.requestId,
+                action,
+                repository: repository.full_name,
+                prNumber: pull_request.number,
+            },
+            "Pull request parsed"
+        );
+       const job =  await reviewQueue.add("review-pr", {
             requestId: req.requestId,
-            action: action,
-        }, "Unsupported action type received");
-
-        return res.status(200).json({ ignored: true });
-    }
-
-    logger.info(
-        {
-            requestId: req.requestId,
-            action,
             repository: repository.full_name,
             prNumber: pull_request.number,
-        },
-        "Pull request parsed"
-    );
-    await reviewQueue.add("review-pr", {
-        requestId: req.requestId,
-        repository: repository.full_name,
-        prNumber: pull_request.number,
-        sha: pull_request.head.sha,
-    });
+            sha: pull_request.head.sha,
+        });
 
-    logger.info(
-        {
-            requestId: req.requestId,
-            jobName: "review-pr",
-        },
-        "Review job queued"
-    );
+        logger.info(
+            {
+                requestId: req.requestId,
+                jobId: job.id,
+                jobName: job.name,
+            },
+            "Review job queued"
+        );
 
-    return res.status(200).json({
-        queued: true,
-    });
+        return res.status(200).json({
+            queued: true,
+        });
 
+    } catch (error) {
+        logger.error(
+            {
+                requestId: req.requestId,
+                err: error,
+            },
+            "Failed to process webhook"
+        );
+
+        return res.status(500).json({
+            message: "Internal server error",
+        });
+    }
 }
