@@ -8,6 +8,7 @@ import {
 } from "../modules/github/github.service";
 import { prepareReviewFiles } from "../modules/review/review.service";
 import { buildReviewPrompt } from "../modules/ai/prompt.service";
+import { generateReview } from "../modules/ai/ai.service";
 
 new Worker(
     "review-queue",
@@ -64,9 +65,9 @@ new Worker(
                 files: reviewFiles
             })
 
-            logger.info({prompt} , "Generated review prompt");
+            const review = await generateReview(prompt)
 
-
+            logger.info({preview: review.slice(0,500)}, "AI Review Generated !")
 
             for (const file of reviewFiles) {
                 logger.info({
