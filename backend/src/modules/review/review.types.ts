@@ -1,4 +1,10 @@
 export interface ReviewFile {
-    filename: string,
+    filename: string
     patch: string
+    changedLines : ChangedLines[]
+}
+
+export interface ChangedLines {
+    line: number
+    code: string
 }
