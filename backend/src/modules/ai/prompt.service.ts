@@ -59,9 +59,23 @@ Each object must have exactly:
 
 {
   "filename": string,
+  "line": number,
   "explanation": string,
   "suggestedFix": string
-}`
+}
+Review ONLY the code shown in each Patch section.
+
+Do not assume anything about code that is not present in the patch.
+
+Do not report issues outside the modified lines.
+
+Return one object for each independent issue.
+
+Do not combine multiple problems into one object.
+
+If you cannot confidently determine the changed line number from the patch,
+do not report the issue.
+`
 
 }
 

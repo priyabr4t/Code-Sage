@@ -1,6 +1,7 @@
 export interface ReviewIssue {
-    filename: string,
-    explanation: string,
-    suggestedFix: string
+    filename: string;
+    line: number;
+    explanation: string;
+    suggestedFix: string;
 }
 
