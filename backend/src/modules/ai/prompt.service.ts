@@ -33,6 +33,16 @@ If the answer to all of the above is NO, do not report it.
 If no significant issues are found, return an empty JSON array.
 
 Return only valid JSON.
+
+Each file contains its modified source lines.
+
+Every line is prefixed with its exact line number.
+
+Example:
+
+42 | const token = ...
+
+If you report an issue, use that exact line number.
 `;
 }
 
@@ -63,7 +73,15 @@ Each object must have exactly:
   "explanation": string,
   "suggestedFix": string
 }
-Review ONLY the code shown in each Patch section.
+Review ONLY the provided changed lines.
+
+The line numbers shown are the exact source file line numbers.
+
+Always use those line numbers in your response.
+
+Do not invent or estimate line numbers.
+
+Do not report issues outside the provided changed lines.
 
 Do not assume anything about code that is not present in the patch.
 
@@ -88,15 +106,19 @@ function buildFilesSection(files: ReviewFile[]): string {
 File:
 ${file.filename}
 
-Patch:
-${file.patch}
+Changed Lines:
 
 `;
+
+        for (const line of file.changedLines) {
+            section += `${line.line} | ${line.code}\n`;
+        }
+
+        section += "\n";
     }
 
     return section;
 }
-
 
 export const buildReviewPrompt = (
     context: ReviewContext
