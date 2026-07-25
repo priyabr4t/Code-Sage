@@ -1,34 +1,19 @@
+import { RestEndpointMethodTypes } from "@octokit/rest";
 import { ReviewFile } from "./review.types";
+import { parsePatch } from "./patch-parser";
 
-export const prepareReviewFiles = (
-    files: any[],
+type PullRequestFile = RestEndpointMethodTypes["pulls"]["listFiles"]["response"]["data"][number];
 
-): ReviewFile[] => {
-    const ignoredFiles = [
-        "package-lock.json",
-        "pnpm-lock.yaml",
-        "yarn.lock",
-    ];
-    const reviewFiles: ReviewFile[] = [];
+function prepareReviewFiles(files: PullRequestFile[]): ReviewFile[] {
+    return files
+        .filter((file) => file.patch)
+        .map((file) => {
+            const patch = file.patch!;
 
-    for (const file of files) {
-
-        // skip files without patch
-        if (!file.patch) continue;
-
-        // skip generated lock files
-        if (
-            ignoredFiles.some((ignoredFile) =>
-                file.filename.endsWith(ignoredFile)
-            )
-        ) {
-            continue;
-        }
-        reviewFiles.push({
-            filename: file.filename,
-            patch: file.patch
-        })
-    }
-
-    return reviewFiles
+            return {
+                filename: file.filename,
+                patch,
+                changedLines: parsePatch(patch),
+            };
+        });
 }
