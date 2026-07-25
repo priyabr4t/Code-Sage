@@ -4,7 +4,7 @@ import { parsePatch } from "./patch-parser";
 
 type PullRequestFile = RestEndpointMethodTypes["pulls"]["listFiles"]["response"]["data"][number];
 
-function prepareReviewFiles(files: PullRequestFile[]): ReviewFile[] {
+export function prepareReviewFiles(files: PullRequestFile[]): ReviewFile[] {
     return files
         .filter((file) => file.patch)
         .map((file) => {
