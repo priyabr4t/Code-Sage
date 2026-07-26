@@ -22,6 +22,7 @@ export function parsePatch(patch: string): ChangedLines[] {
             continue;
         }
 
+        
         // Added line
         if (line.startsWith("+") && !line.startsWith("+++")) {
             changedLines.push({
