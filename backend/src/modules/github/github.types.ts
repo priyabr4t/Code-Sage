@@ -12,4 +12,8 @@ export interface PullRequestWebhookPayload {
             sha: string;
         };
     };
+    sender?: {
+        login: string
+    },
+    changes: string
 }   

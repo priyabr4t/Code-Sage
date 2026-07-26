@@ -17,16 +17,30 @@ export const webhookRequestHandler = async (req: Request, res: Response) => {
             });
         }
 
+
         const payload: PullRequestWebhookPayload = JSON.parse(req.body.toString());
 
         const { action, repository, pull_request } = payload;
+
+        const event = req.header("X-GitHub-Event");
+
+        logger.info(
+            {
+                requestId: req.requestId,
+                event,
+                action: action,
+                sender: payload.sender?.login,
+                changes: payload.changes
+            },
+            "PR Edited"
+        );
 
         // avoid unsupported action types
         if (action !== "opened" && action !== "synchronize") {
             logger.info({
                 requestId: req.requestId,
                 action: action,
-            }, "Unsupported action type received");
+            }, "Ignoring pull request action");
 
             return res.status(200).json({ ignored: true });
         }
@@ -40,7 +54,7 @@ export const webhookRequestHandler = async (req: Request, res: Response) => {
             },
             "Pull request parsed"
         );
-       const job =  await reviewQueue.add("review-pr", {
+        const job = await reviewQueue.add("review-pr", {
             requestId: req.requestId,
             repository: repository.full_name,
             prNumber: pull_request.number,

@@ -67,7 +67,15 @@ new Worker(
 
             const review = await generateReview(prompt)
 
-            logger.info({preview: review.slice(0,500)}, "AI Review Generated !")
+            console.log(prompt);
+
+            logger.info(
+                {
+                    preview: review.slice(0, 500),
+                    issueCount: review.length,
+                },
+                "AI Review Generated !"
+            )
 
         } catch (error) {
             logger.error(
