@@ -1,3 +1,4 @@
+import { logger } from "../../shared/logger";
 import { ReviewIssue } from "./parser.types";
 
 export const parseReview = (response: string): ReviewIssue[] => {
@@ -7,5 +8,10 @@ export const parseReview = (response: string): ReviewIssue[] => {
         .replace(/\s*```$/, "")
         .trim();
 
-    return JSON.parse(cleaned);
+    try {
+        return JSON.parse(cleaned);
+    } catch {
+        logger.warn("Invalid AI response");
+        return [];
+    }
 };
