@@ -67,7 +67,7 @@ new Worker(
 
             const review = await generateReview(prompt)
 
-            console.log(prompt);
+            // console.log(prompt);
 
             logger.info(
                 {
