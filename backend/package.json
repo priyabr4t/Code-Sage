@@ -10,7 +10,8 @@
     "worker": "tsx watch src/workers/review.worker.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "test-signature": "tsx src/scripts/test-signature.ts"
+    "test-signature": "tsx src/scripts/test-signature.ts",
+    "test": "vitest run"
   },
   "keywords": [],
   "author": "",
@@ -33,6 +34,7 @@
     "dotenv": "^17.4.2",
     "prisma": "^7.8.0",
     "tsx": "^4.23.0",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
   }
 }

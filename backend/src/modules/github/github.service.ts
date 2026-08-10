@@ -29,7 +29,6 @@ export const getPullRequestFiles = async (
 
         }
     )
-    console.log(files.length);
 
     return files
 }

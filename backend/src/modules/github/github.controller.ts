@@ -22,19 +22,6 @@ export const webhookRequestHandler = async (req: Request, res: Response) => {
 
         const { action, repository, pull_request } = payload;
 
-        // const event = req.header("X-GitHub-Event");
-
-        // logger.info(
-        //     {
-        //         requestId: req.requestId,
-        //         event,
-        //         action: action,
-        //         sender: payload.sender?.login,
-        //         changes: payload.changes
-        //     },
-        //     "PR Edited"
-        // );
-
         // avoid unsupported action types
         if (action !== "opened" && action !== "synchronize") {
             logger.info({
