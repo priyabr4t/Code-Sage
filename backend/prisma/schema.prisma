@@ -11,3 +11,29 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+
+model Review {
+  id           String       @id @default(cuid())
+
+  repository   String
+  prNumber     Int
+  commitSha    String
+
+  status       ReviewStatus @default(QUEUED)
+
+  issueCount   Int           @default(0)
+
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@unique([repository, prNumber, commitSha])
+  @@index([repository, prNumber])
+}
+
+enum ReviewStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+}
